@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>使用Javascript改变HTML内容的测试-起飞网</title>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+    <script type="text/javascript">
+        document.write("点击按钮获取文件");
+
+        function writeHtmlLater() {
+            // alert(document.getElementById("fileName").value)
+            document.write("哈哈，我把内容覆盖了~");
+        }
+        function downLoadFile(){
+            $.ajax(
+                {
+                    url:"/getFiles",
+                }
+            )
+        }
+        function  getFileList(){
+            $.ajax(
+                {
+                    url:"/GetFileList",
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    method:'GET',
+                    success: function(data){
+                        // document.querySelector("#show").innerHTML = data;
+                        // alert(data)
+                        html_string = ""
+                        downFileUrl_base = ""
+                        for(var key in data){
+                            // html_string += data[key] + "<p></p>"
+                            downFileUrl =
+                            html_string+="<a href=''"+"id="+key+">"+data[key]+"</a>" + "<p></p>"
+
+                        }
+                        html_string+="<p><input type=\"text\" id=\"fileName\" /></p>"
+                        html_string +="<p><input type=\"button\" value=\"下载文件\" onclick=\"writeHtmlLater()\" /></p>"
+                        document.write(html_string)
+                        windows_base_path = "E:\\就业\\golang\\project\\remote_sense_go\\Files\\DownLoadDir"
+                        linux_base_path = "/home/ubuntu/xza_file"
+                        for(var key in data){
+                            $("#"+key).attr("href","/downloadFiles?fileDir="+windows_base_path+"&fileName="+data[key]);
+                        }
+                    },
+                    error:function(err){
+                        alert(err);
+                    },
+                });
+        }
+    </script>
+</head>
+<body>
+<h1>文件列表</h1>
+<p><input type="text" id="fileName" /></p>
+<p><input type="button" value="获取文件列表" onclick="getFileList()" /></p>
+<!--<p><input type="button" value="下载文件" onclick="downLoadFile()" /></p>-->
+
+<form action="/GetFileList" method="post" name="searchform" id="searchform">
+<!--    后端收到的是根据name作为key来的-->
+    <input name="path" id="filePath" class="input_text" value="请输入关键字" style="color: rgb(153, 153, 153);" onfocus="if(value=='请输入关键字'){this.style.color='#000';value=''}" onblur="if(value==''){this.style.color='#999';value='请输入关键字'}" type="text">
+    <input name="Submit"  value="搜索" type="submit">
+</form>
+
+
+<form action="/uploadfiles" method="post" enctype="multipart/form-data" >
+    <input type="file" name="f1" multiple="multiple">
+    <input type="submit" value="上传">
+</form>
+</body>
+</html>
